@@ -8,3 +8,5 @@ Register for free at www.quandl.com to get your free API key.
 Set QUANDL_API_KEY environment variable to your Quandl key before starting the feed.
 
 Use NodeJS to launch yahoo.js
+
+QUANDL_API_KEY=8t143221PiARvaWST2Lj node yahoo.js

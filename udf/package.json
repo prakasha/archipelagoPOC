@@ -1,0 +1,14 @@
+{
+  "name": "archipelago_poc",
+  "version": "1.0.0",
+  "description": "Initial version",
+  "main": "yahoo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prakash Anandan",
+  "license": "ISC",
+  "dependencies": {
+    "csv": "^2.0.0"
+  }
+}

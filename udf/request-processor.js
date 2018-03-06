@@ -15,8 +15,70 @@
 
 var https = require("https");
 var http = require("http");
-
 var quandlCache = {};
+
+// var fs = require('fs');
+// var parse = require('csv-parse');
+// var async = require('async');
+
+// var inputFile = 'btc.csv';
+
+// var parser = parse({ delimiter: ',' }, function (err, data) {
+// 	async.eachSeries(data, function (line, callback) {
+// 		// do something with the line
+// 		doSomething(line).then(function () {
+// 			// when processing finishes invoke the callback to move to the next one
+// 			callback();
+// 		});
+// 	})
+// });
+// fs.createReadStream(inputFile).pipe(parser);
+
+var btcdata = {
+	t: [],
+	c: [],
+	o: [],
+	h: [],
+	l: [],
+	v: [],
+	s: "ok"
+};
+
+function parseDate1(input) {
+	var parts = input.split('/');
+	return Date.UTC(parts[2], parts[0] - 1, parts[1]);
+}
+
+var fs = require('fs'); 
+var parse = require('csv-parse');
+
+var csvData=[];
+fs.createReadStream('btc.csv')
+    .pipe(parse({delimiter: ':'}))
+    .on('data', function(csvrow) {
+        //console.log(csvrow);
+        //do something with csvrow
+        btcdata.t.push(parseDate1(csvrow[0].split(',')[0]) / 1000);
+		btcdata.o.push(csvrow[0].split(',')[1]);
+		btcdata.h.push(0);
+		btcdata.l.push(0);
+		btcdata.c.push(csvrow[0].split(',')[1]);
+		btcdata.v.push(0);        
+    })
+    .on('end',function() {
+      //do something wiht csvData
+      //console.log(csvData);
+    });
+function doSomething(line)
+{
+	btcdata.t.push(0);
+	btcdata.o.push(190);
+	btcdata.h.push(0);
+	btcdata.l.push(0);
+	btcdata.c.push(195);
+	btcdata.v.push(0);
+	return btcdata;
+}
 
 var quandlCacheCleanupTime = 3 * 60 * 60 * 100; // 3 hours
 var yahooFailedStateCacheTime = 3 * 60 * 60 * 100; // 3 hours;
@@ -92,10 +154,12 @@ function httpGet(datafeedHost, path, callback) {
 }
 
 function convertQuandlHistoryToUDFFormat(data) {
-	function parseDate(input) {
-		var parts = input.split('-');
-		return Date.UTC(parts[0], parts[1] - 1, parts[2]);
-	}
+
+
+function parseDate(input) {
+	var parts = input.split('-');
+	return Date.UTC(parts[0], parts[1] - 1, parts[2]);
+}
 
 	function columnIndices(columns) {
 		var indices = {};
@@ -123,10 +187,10 @@ function convertQuandlHistoryToUDFFormat(data) {
 
 		datatable.data.forEach(function (row) {
 			result.t.push(parseDate(row[idx.date]) / 1000);
-			result.o.push(row[idx.open]);
+			result.o.push(190);
 			result.h.push(row[idx.high]);
 			result.l.push(row[idx.low]);
-			result.c.push(row[idx.close]);
+			result.c.push(195);
 			result.v.push(row[idx.volume]);
 		});
 
@@ -135,7 +199,7 @@ function convertQuandlHistoryToUDFFormat(data) {
 		console.error(dateForLogs() + error + ", failed to parse: " + dataStr);
 	}
 
-	return result;
+	return btcdata;
 }
 
 function convertYahooQuotesToUDFFormat(tickersMap, data) {
@@ -492,7 +556,7 @@ RequestProcessor.prototype._sendSymbolHistory = function (symbol, startDateTimes
 	}
 
 	var address = "/api/v3/datatables/WIKI/PRICES.json" +
-		"?api_key=" + process.env.QUANDL_API_KEY + // you should create a free account on quandl.com to get this key
+		"?api_key=" + "8t143221PiARvaWST2Lj" + // you should create a free account on quandl.com to get this key
 		"&ticker=" + symbol +
 		"&date.gte=" + from +
 		"&date.lte=" + to;
