@@ -42,7 +42,7 @@
           {
             var widget = window.tvWidget = new TradingView.widget({
               fullscreen: true,
-              symbol: 'AAPL',
+              symbol: 'BTC NVT',
               interval: 'D',
               container_id: "tv_chart_container",
               //	BEWARE: no trailing slash is expected in feed URL
@@ -55,11 +55,34 @@
               disabled_features: [  "left_toolbar",
                                     "control_bar",
                                     "header_widget_dom_node", 
-                                    "volume_force_overlay", "create_volume_indicator_by_default"],
+                                    "volume_force_overlay",
+                                     "create_volume_indicator_by_default",
+                                    "display_market_status",
+                                "chart_property_page_background"],
               overrides: {
-						"volumePaneSize": "tiny"
+                        "volumePaneSize": "tiny",
+                        "scalesProperties.showLeftScale": true,
+                        "scalesProperties.showRightScale": false,
+                        "scalesProperties.showSeriesLastValue": false,
+                        "paneProperties.legendProperties.showSeriesOHLC": false,
+                        "mainSeriesProperties.style": 2,
+                        "mainSeriesProperties.showPriceLine": false,
+                        "scalesProperties.showSeriesLastValue": false,
 					},
               enabled_features: ["study_templates"],
+              time_frames: [
+						{ text: "5y", resolution: "M" },
+						{ text: "3y", resolution: "W" },
+						{ text: "8m", resolution: "D" },
+						{ text: "2m", resolution: "D" },
+						{ text: "1m", resolution: "60" },
+						{ text: "1w", resolution: "30" },
+						{ text: "7d", resolution: "30" },
+						{ text: "5d", resolution: "10" },
+						{ text: "3d", resolution: "10" },
+						{ text: "2d", resolution: "5" },
+						{ text: "1d", resolution: "5" }
+					],
               charts_storage_url: 'http://saveload.tradingview.com',
                         charts_storage_api_version: "1.1",
               client_id: 'tradingview.com',

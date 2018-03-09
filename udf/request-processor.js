@@ -17,23 +17,6 @@ var https = require("https");
 var http = require("http");
 var quandlCache = {};
 
-// var fs = require('fs');
-// var parse = require('csv-parse');
-// var async = require('async');
-
-// var inputFile = 'btc.csv';
-
-// var parser = parse({ delimiter: ',' }, function (err, data) {
-// 	async.eachSeries(data, function (line, callback) {
-// 		// do something with the line
-// 		doSomething(line).then(function () {
-// 			// when processing finishes invoke the callback to move to the next one
-// 			callback();
-// 		});
-// 	})
-// });
-// fs.createReadStream(inputFile).pipe(parser);
-
 var btcdata = {
 	t: [],
 	c: [],
@@ -69,16 +52,6 @@ fs.createReadStream('btc.csv')
       //do something wiht csvData
       //console.log(csvData);
     });
-function doSomething(line)
-{
-	btcdata.t.push(0);
-	btcdata.o.push(190);
-	btcdata.h.push(0);
-	btcdata.l.push(0);
-	btcdata.c.push(195);
-	btcdata.v.push(0);
-	return btcdata;
-}
 
 var quandlCacheCleanupTime = 3 * 60 * 60 * 100; // 3 hours
 var yahooFailedStateCacheTime = 3 * 60 * 60 * 100; // 3 hours;
@@ -154,50 +127,48 @@ function httpGet(datafeedHost, path, callback) {
 }
 
 function convertQuandlHistoryToUDFFormat(data) {
+	// function parseDate(input) {
+	// 	var parts = input.split('-');
+	// 	return Date.UTC(parts[0], parts[1] - 1, parts[2]);
+	// }
 
+	// 	function columnIndices(columns) {
+	// 		var indices = {};
+	// 		for (var i = 0; i < columns.length; i++) {
+	// 			indices[columns[i].name] = i;
+	// 		}
 
-function parseDate(input) {
-	var parts = input.split('-');
-	return Date.UTC(parts[0], parts[1] - 1, parts[2]);
-}
+	// 		return indices;
+	// 	}
 
-	function columnIndices(columns) {
-		var indices = {};
-		for (var i = 0; i < columns.length; i++) {
-			indices[columns[i].name] = i;
-		}
+	// 	var result = {
+	// 		t: [],
+	// 		c: [],
+	// 		o: [],
+	// 		h: [],
+	// 		l: [],
+	// 		v: [],
+	// 		s: "ok"
+	// 	};
 
-		return indices;
-	}
+	// 	try {
+	// 		var json = JSON.parse(data);
+	// 		var datatable = json.datatable;
+	// 		var idx = columnIndices(datatable.columns);
 
-	var result = {
-		t: [],
-		c: [],
-		o: [],
-		h: [],
-		l: [],
-		v: [],
-		s: "ok"
-	};
+	// 		datatable.data.forEach(function (row) {
+	// 			result.t.push(parseDate(row[idx.date]) / 1000);
+	// 			result.o.push(190);
+	// 			result.h.push(row[idx.high]);
+	// 			result.l.push(row[idx.low]);
+	// 			result.c.push(195);
+	// 			result.v.push(row[idx.volume]);
+	// 		});
 
-	try {
-		var json = JSON.parse(data);
-		var datatable = json.datatable;
-		var idx = columnIndices(datatable.columns);
-
-		datatable.data.forEach(function (row) {
-			result.t.push(parseDate(row[idx.date]) / 1000);
-			result.o.push(190);
-			result.h.push(row[idx.high]);
-			result.l.push(row[idx.low]);
-			result.c.push(195);
-			result.v.push(row[idx.volume]);
-		});
-
-	} catch (error) {
-		var dataStr = typeof data === "string" ? data.slice(0, 100) : data;
-		console.error(dateForLogs() + error + ", failed to parse: " + dataStr);
-	}
+	// 	} catch (error) {
+	// 		var dataStr = typeof data === "string" ? data.slice(0, 100) : data;
+	// 		console.error(dateForLogs() + error + ", failed to parse: " + dataStr);
+	// 	}
 
 	return btcdata;
 }
@@ -484,28 +455,28 @@ RequestProcessor.prototype._sendSymbolSearchResults = function (query, type, exc
 };
 
 RequestProcessor.prototype._prepareSymbolInfo = function (symbolName) {
-	var symbolInfo = this._symbolsDatabase.symbolInfo(symbolName);
+	// var symbolInfo = this._symbolsDatabase.symbolInfo(symbolName);
 
-	if (!symbolInfo) {
-		throw "unknown_symbol " + symbolName;
-	}
+	// if (!symbolInfo) {
+	// 	throw "unknown_symbol " + symbolName;
+	// }
 
 	return {
-		"name": symbolInfo.name,
-		"exchange-traded": symbolInfo.exchange,
-		"exchange-listed": symbolInfo.exchange,
+		"name": "BTC",
+		"exchange-traded": "NVT",
+		"exchange-listed": "NVT",
 		"timezone": "America/New_York",
 		"minmov": 1,
 		"minmov2": 0,
 		"pointvalue": 1,
 		"session": "0930-1630",
 		"has_intraday": false,
-		"has_no_volume": symbolInfo.type !== "stock",
-		"description": symbolInfo.description.length > 0 ? symbolInfo.description : symbolInfo.name,
-		"type": symbolInfo.type,
+		"has_no_volume": true,
+		"description": "BTC NVT",
+		"type": "NVT",
 		"supported_resolutions": ["D", "2D", "3D", "W", "3W", "M", "6M"],
 		"pricescale": 100,
-		"ticker": symbolInfo.name.toUpperCase()
+		"ticker": "BTC"
 	};
 };
 
@@ -548,38 +519,49 @@ RequestProcessor.prototype._sendSymbolHistory = function (symbol, startDateTimes
 
 	var key = symbol + "|" + from + "|" + to;
 
-	if (quandlCache[key]) {
-		var dataFromCache = filterDataPeriod(quandlCache[key], startDateTimestamp, endDateTimestamp);
-		logForData(dataFromCache, key, true);
-		sendResult(JSON.stringify(dataFromCache));
-		return;
+	// if (quandlCache[key]) {
+	// 	var dataFromCache = filterDataPeriod(quandlCache[key], startDateTimestamp, endDateTimestamp);
+	// 	logForData(dataFromCache, key, true);
+	// 	sendResult(JSON.stringify(dataFromCache));
+	// 	return;
+	// }
+
+	// var address = "/api/v3/datatables/WIKI/PRICES.json" +
+	// 	"?api_key=" + "8t143221PiARvaWST2Lj" + // you should create a free account on quandl.com to get this key
+	// 	"&ticker=" + symbol +
+	// 	"&date.gte=" + from +
+	// 	"&date.lte=" + to;
+
+	// console.log(dateForLogs() + "Sending request to quandl  " + key + ". url=" + address);
+
+	// httpGet("www.quandl.com", address, function (result) {
+	// 	if (response.finished) {
+	// 		// we can be here if error happened on socket disconnect
+	// 		return;
+	// 	}
+	// 	console.log(dateForLogs() + "Got response from quandl  " + key + ". Try to parse.");
+	// 	var data = convertQuandlHistoryToUDFFormat(result);
+	// 	if (data.t.length !== 0) {
+	// 		console.log(dateForLogs() + "Successfully parsed and put to cache " + data.t.length + " bars.");
+	// 		quandlCache[key] = data;
+	// 	} else {
+	// 		console.warn(dateForLogs() + "Parsing returned empty result.");
+	// 	}
+	// 	var filteredData = filterDataPeriod(data, startDateTimestamp, endDateTimestamp);
+	// 	logForData(filteredData, key, false);
+	// 	sendResult(JSON.stringify(filteredData));
+	// });
+
+	var data = convertQuandlHistoryToUDFFormat(null);
+	if (data.t.length !== 0) {
+		console.log(dateForLogs() + "Successfully parsed and put to cache " + data.t.length + " bars.");
+		quandlCache[key] = data;
+	} else {
+		console.warn(dateForLogs() + "Parsing returned empty result.");
 	}
-
-	var address = "/api/v3/datatables/WIKI/PRICES.json" +
-		"?api_key=" + "8t143221PiARvaWST2Lj" + // you should create a free account on quandl.com to get this key
-		"&ticker=" + symbol +
-		"&date.gte=" + from +
-		"&date.lte=" + to;
-
-	console.log(dateForLogs() + "Sending request to quandl  " + key + ". url=" + address);
-
-	httpGet("www.quandl.com", address, function (result) {
-		if (response.finished) {
-			// we can be here if error happened on socket disconnect
-			return;
-		}
-		console.log(dateForLogs() + "Got response from quandl  " + key + ". Try to parse.");
-		var data = convertQuandlHistoryToUDFFormat(result);
-		if (data.t.length !== 0) {
-			console.log(dateForLogs() + "Successfully parsed and put to cache " + data.t.length + " bars.");
-			quandlCache[key] = data;
-		} else {
-			console.warn(dateForLogs() + "Parsing returned empty result.");
-		}
-		var filteredData = filterDataPeriod(data, startDateTimestamp, endDateTimestamp);
-		logForData(filteredData, key, false);
-		sendResult(JSON.stringify(filteredData));
-	});
+	var filteredData = filterDataPeriod(data, startDateTimestamp, endDateTimestamp);
+	logForData(filteredData, key, false);
+	sendResult(JSON.stringify(filteredData));
 };
 
 RequestProcessor.prototype._quotesQuandlWorkaround = function (tickersMap) {
@@ -729,7 +711,7 @@ RequestProcessor.prototype.processRequest = function (action, query, response) {
 			this._sendQuotes(query["symbols"], response);
 		}
 		else if (action === "/marks") {
-			this._sendMarks(response);
+			//this._sendMarks(response);
 		}
 		else if (action === "/time") {
 			this._sendTime(response);
