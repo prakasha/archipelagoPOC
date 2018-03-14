@@ -46,19 +46,20 @@
               interval: 'D',
               container_id: "tv_chart_container",
               //	BEWARE: no trailing slash is expected in feed URL
-              datafeed: new Datafeeds.UDFCompatibleDatafeed("http://localhost:8888"),
-              //datafeed: new Datafeeds.UDFCompatibleDatafeed("http://archipelago.fr.openode.io"),
+              //datafeed: new Datafeeds.UDFCompatibleDatafeed("http://localhost:8888"),
+              datafeed: new Datafeeds.UDFCompatibleDatafeed("http://archipelago.fr.openode.io"),
               library_path: "charting_library/",
               locale: getParameterByName('lang') || "en",
               //	Regression Trend-related functionality is not implemented yet, so it's hidden for a while
               drawings_access: { type: 'black', tools: [ { name: "Regression Trend" } ] },
-              disabled_features: [  "left_toolbar",
-                                    "control_bar",
-                                    "header_widget_dom_node", 
+              disabled_features: [  //"left_toolbar",
+                                    //"control_bar",
+                                    //"header_widget_dom_node", 
                                     "volume_force_overlay",
-                                     "create_volume_indicator_by_default",
+                                    "create_volume_indicator_by_default",
                                     "display_market_status",
-                                "chart_property_page_background"],
+                                    //"chart_property_page_background"
+                                ],
               overrides: {
                         "volumePaneSize": "tiny",
                         "scalesProperties.showLeftScale": true,

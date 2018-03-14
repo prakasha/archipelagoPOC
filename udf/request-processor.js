@@ -717,7 +717,7 @@ RequestProcessor.prototype.processRequest = function (action, query, response) {
 			this._sendTime(response);
 		}
 		else if (action === "/timescale_marks") {
-			this._sendTimescaleMarks(response);
+			//this._sendTimescaleMarks(response);
 		}
 		else if (action === "/news") {
 			this._sendNews(query["symbol"], response);

@@ -25,7 +25,7 @@ var requestProcessor = new RequestProcessor(symbolsDatabase);
 //		/search?query=B&limit=10
 //		/history?symbol=C&from=DATE&resolution=E
 
-var firstPort = process.env.YAHOO_PORT || 8888;
+var firstPort = 8888;
 function getFreePort(callback) {
 	var port = firstPort;
 	firstPort++;
